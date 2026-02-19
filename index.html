@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Photo's Header & Footer Applier</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="bg"></div>
+
+  <main class="wrap">
+    <header class="top">
+      <div>
+        <h1>Add Header & Footer to your Images</h1>
+        <p class="sub">Upload banyak foto → auto output width <b>1080px</b> dengan header & footer.</p>
+      </div>
+      <div class="pill">No server • In-browser</div>
+    </header>
+
+    <section class="grid">
+      <!-- LEFT -->
+      <div class="panel">
+        <div class="panelHead">
+          <h2>Overlays</h2>
+          <p>Header & footer boleh update bila-bila.</p>
+        </div>
+
+        <div class="overlayGrid">
+          <div class="overlayCard">
+            <div class="overlayTop">
+              <div class="badge">Header</div>
+              <button class="ghost" id="clearHeaderBtn" type="button">Clear</button>
+            </div>
+
+            <label class="drop" id="headerDrop">
+              <input id="headerInput" type="file" accept="image/*" hidden />
+              <div class="dropIcon">⬆️</div>
+              <div class="dropText">
+                <b>Drag & drop</b> atau klik untuk upload
+                <span>PNG transparent paling cun</span>
+              </div>
+            </label>
+
+            <div class="thumbWrap">
+              <img id="headerThumb" alt="" />
+              <div class="thumbEmpty" id="headerEmpty">Belum upload</div>
+            </div>
+          </div>
+
+          <div class="overlayCard">
+            <div class="overlayTop">
+              <div class="badge">Footer</div>
+              <button class="ghost" id="clearFooterBtn" type="button">Clear</button>
+            </div>
+
+            <label class="drop" id="footerDrop">
+              <input id="footerInput" type="file" accept="image/*" hidden />
+              <div class="dropIcon">⬆️</div>
+              <div class="dropText">
+                <b>Drag & drop</b> atau klik untuk upload
+                <span>Pastikan lebar design sesuai</span>
+              </div>
+            </label>
+
+            <div class="thumbWrap">
+              <img id="footerThumb" alt="" />
+              <div class="thumbEmpty" id="footerEmpty">Belum upload</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panelFoot">
+          <div class="smallNote">
+            Output width fix <b>1080px</b>. Height ikut ratio foto + overlay.
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="panel">
+        <div class="panelHead">
+          <h2>Photos</h2>
+          <p>Upload photo banyak. Nanti download 1-1 atau ZIP.</p>
+        </div>
+
+        <label class="drop big" id="photosDrop">
+          <input id="photosInput" type="file" accept="image/*" multiple hidden />
+          <div class="dropIcon">🖼️</div>
+          <div class="dropText">
+            <b>Drag & drop photos</b> atau klik untuk pilih banyak
+            <span>Support JPG/PNG/WEBP</span>
+          </div>
+        </label>
+
+<div class="setRow">
+  <div class="setLabel">Output Height</div>
+  <input id="outHeight" type="number" value="1080" min="200" step="10" class="select" />
+  <div class="qVal">px</div>
+</div>
+
+<label class="toggle">
+  <input id="blurFillToggle" type="checkbox" checked />
+  <span class="slider"></span>
+  <span class="toggleText">Blur background fill</span>
+</label>
+
+
+
+        <div class="settings">
+          <div class="setRow">
+            <div class="setLabel">Format</div>
+            <select id="formatSelect" class="select">
+              <option value="image/jpeg">JPG</option>
+              <option value="image/png">PNG</option>
+            </select>
+          </div>
+
+          <div class="setRow">
+            <div class="setLabel">Quality (JPG)</div>
+            <input id="quality" type="range" min="70" max="95" value="92" />
+            <div class="qVal"><span id="qualityVal">92</span>%</div>
+          </div>
+
+          <label class="toggle">
+            <input id="zipToggle" type="checkbox" checked />
+            <span class="slider"></span>
+            <span class="toggleText">Download sebagai ZIP</span>
+          </label>
+        </div>
+
+        <div class="actions">
+          <button id="processBtn" class="btn">Process & Download</button>
+          <div class="status" id="status">Ready.</div>
+        </div>
+
+        <div class="progress">
+          <div class="bar" id="bar"></div>
+        </div>
+
+        <div class="previewCard">
+          <div class="previewHead">
+            <h3>Preview</h3>
+            <span class="muted">sample first output</span>
+          </div>
+          <div class="previewBody">
+            <canvas id="previewCanvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      Last Update 19 Feb 2026 by Muin
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
