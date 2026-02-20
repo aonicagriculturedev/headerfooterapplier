@@ -1,441 +1,250 @@
-:root{
-  --bg: #f6f7fb;
-  --card: #ffffff;
-  --text: #0f172a;
-  --muted: #64748b;
-  --border: #e5e7eb;
-  --shadow: 0 12px 32px rgba(15, 23, 42, .08);
-  --shadow2: 0 6px 18px rgba(15, 23, 42, .06);
-  --r: 18px;
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Photo's Header & Footer Applier</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="bg"></div>
 
-  --primary: #2563eb;
-  --primary2:#7c3aed;
-  --ok: #16a34a;
-  --warn:#f59e0b;
-}
+  <main class="wrap">
+    <header class="top">
+      <div>
+        <h1>Add Header & Footer to your Images</h1>
+        <p class="sub">Upload banyak foto → edit crop/position satu-satu → export semua. Output width <b>1080px</b>.</p>
+      </div>
+      <div class="pill">No server • In-browser</div>
+    </header>
 
-*{ box-sizing:border-box; }
-html,body{ height:100%; }
-body{
-  margin:0;
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-  background:
-    radial-gradient(900px 500px at 20% 0%, rgba(37,99,235,.10), transparent 60%),
-    radial-gradient(700px 500px at 95% 10%, rgba(124,58,237,.10), transparent 55%),
-    var(--bg);
-  color: var(--text);
-}
-.bg{ display:none; }
+    <section class="grid">
+      <!-- LEFT -->
+      <div class="panel">
+        <div class="panelHead">
+          <h2>Overlays</h2>
+          <p>Header & footer boleh update bila-bila.</p>
+        </div>
 
-.wrap{ max-width: 1120px; margin:0 auto; padding: 28px 16px 36px; }
+        <div class="overlayGrid">
+          <div class="overlayCard">
+            <div class="overlayTop">
+              <div class="badge">Header</div>
+              <button class="ghost" id="clearHeaderBtn" type="button">Clear</button>
+            </div>
 
-.top{
-  display:flex; justify-content:space-between; align-items:flex-start; gap:14px;
-  padding: 18px 18px;
-  border-radius: var(--r);
-  background: linear-gradient(135deg, rgba(37,99,235,.10), rgba(124,58,237,.08));
-  border: 1px solid rgba(37,99,235,.16);
-  box-shadow: var(--shadow2);
-  margin-bottom: 14px;
-}
+            <label class="drop" id="headerDrop">
+              <input id="headerInput" type="file" accept="image/*" hidden />
+              <div class="dropIcon">⬆️</div>
+              <div class="dropText">
+                <b>Drag & drop</b> atau klik untuk upload
+                <span>PNG transparent paling cun</span>
+              </div>
+            </label>
 
-h1{ margin:0; font-size: 24px; letter-spacing:.2px; }
-.sub{ margin:6px 0 0; color: var(--muted); line-height:1.5; font-size: 14px; }
+            <div class="thumbWrap">
+              <img id="headerThumb" alt="" />
+              <div class="thumbEmpty" id="headerEmpty">Belum upload</div>
+            </div>
+          </div>
 
-.pill{
-  padding:10px 12px;
-  border:1px solid rgba(37,99,235,.18);
-  background: rgba(255,255,255,.7);
-  border-radius: 999px;
-  font-size: 12px;
-  color: #1e40af;
-  box-shadow: var(--shadow2);
-  white-space:nowrap;
-}
+          <div class="overlayCard">
+            <div class="overlayTop">
+              <div class="badge">Footer</div>
+              <button class="ghost" id="clearFooterBtn" type="button">Clear</button>
+            </div>
 
-.grid{ display:grid; grid-template-columns: 1fr 1.1fr; gap: 14px; }
+            <label class="drop" id="footerDrop">
+              <input id="footerInput" type="file" accept="image/*" hidden />
+              <div class="dropIcon">⬆️</div>
+              <div class="dropText">
+                <b>Drag & drop</b> atau klik untuk upload
+                <span>Pastikan lebar design sesuai</span>
+              </div>
+            </label>
 
-.panel{
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  box-shadow: var(--shadow);
-  padding: 16px;
-}
+            <div class="thumbWrap">
+              <img id="footerThumb" alt="" />
+              <div class="thumbEmpty" id="footerEmpty">Belum upload</div>
+            </div>
+          </div>
+        </div>
 
-.panelHead{
-  display:flex; align-items:flex-end; justify-content:space-between; gap:10px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 12px;
-}
-.panelHead h2{ margin:0; font-size: 15px; }
-.panelHead p{ margin:0; color: var(--muted); font-size: 13px; line-height:1.4; }
+        <div class="panelFoot">
+          <div class="smallNote">
+            Output width fix <b>1080px</b>. Height ikut <b>Output Height</b> yang kau set (default 1080).
+          </div>
+        </div>
+      </div>
 
-.overlayGrid{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.overlayCard{
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 12px;
-  background: #fbfbfe;
-}
+      <!-- RIGHT -->
+      <div class="panel">
+        <div class="panelHead">
+          <h2>Photos</h2>
+          <p>Upload photo banyak → edit satu-satu → export semua.</p>
+        </div>
 
-.overlayTop{ display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px; }
+        <label class="drop big" id="photosDrop">
+          <input id="photosInput" type="file" accept="image/*" multiple hidden />
+          <div class="dropIcon">🖼️</div>
+          <div class="dropText">
+            <b>Drag & drop photos</b> atau klik untuk pilih banyak
+            <span>Support JPG/PNG/WEBP</span>
+          </div>
+        </label>
 
-.badge{
-  font-size: 12px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  border:1px solid rgba(37,99,235,.18);
-  background: rgba(37,99,235,.08);
-  color: #1e40af;
-}
+        <div class="settings">
+          <div class="setRow">
+            <div class="setLabel">Output Height</div>
+            <input id="outHeight" type="number" value="1080" min="200" step="10" class="select" />
+            <div class="qVal">px</div>
+          </div>
 
-.ghost{
-  border: 1px solid var(--border);
-  background: #fff;
-  color: var(--text);
-  padding: 7px 10px;
-  border-radius: 12px;
-  cursor:pointer;
-  box-shadow: var(--shadow2);
-}
-.ghost:hover{ border-color: rgba(37,99,235,.35); }
+          <label class="toggle">
+            <input id="blurFillToggle" type="checkbox" checked />
+            <span class="slider"></span>
+            <span class="toggleText">Blur background fill</span>
+          </label>
 
-.drop{
-  display:flex; gap:12px; align-items:center;
-  padding: 12px;
-  border-radius: 16px;
-  border: 1.6px dashed rgba(100,116,139,.45);
-  background: linear-gradient(180deg, #ffffff, #fafafe);
-  cursor:pointer;
-  transition: .15s ease;
-  user-select:none;
-}
-.drop:hover{ transform: translateY(-1px); border-color: rgba(37,99,235,.45); box-shadow: var(--shadow2); }
-.drop.dragover{
-  border-color: rgba(37,99,235,.75);
-  background: rgba(37,99,235,.08);
-}
+          <div class="setRow">
+            <div class="setLabel">Format</div>
+            <select id="formatSelect" class="select">
+              <option value="image/jpeg">JPG</option>
+              <option value="image/png">PNG</option>
+            </select>
+          </div>
 
-.drop.big{ padding: 18px; }
-.dropIcon{
-  width: 42px; height: 42px;
-  display:grid; place-items:center;
-  border-radius: 12px;
-  background: rgba(37,99,235,.10);
-  color:#1d4ed8;
-  font-size: 20px;
-}
-.dropText b{ display:block; font-size: 14px; }
-.dropText span{ display:block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+          <div class="setRow">
+            <div class="setLabel">Quality (JPG)</div>
+            <input id="quality" type="range" min="70" max="95" value="92" />
+            <div class="qVal"><span id="qualityVal">92</span>%</div>
+          </div>
 
-.thumbWrap{
-  margin-top: 10px;
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  background: #fff;
-  overflow:hidden;
-  height: 92px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.thumbWrap img{ max-width: 100%; max-height: 100%; display:none; }
-.thumbEmpty{ color: var(--muted); font-size: 12px; }
+          <label class="toggle">
+            <input id="zipToggle" type="checkbox" checked />
+            <span class="slider"></span>
+            <span class="toggleText">Download sebagai ZIP</span>
+          </label>
+        </div>
 
-.settings{
-  margin-top: 12px;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  background: #fbfbfe;
-  padding: 12px;
-}
-.setRow{
-  display:grid;
-  grid-template-columns: 120px 1fr auto;
-  align-items:center;
-  gap: 10px;
-  padding: 8px 0;
-}
-.setLabel{ color: var(--muted); font-size: 13px; }
+        <!-- THUMBNAILS LIST -->
+        <div class="thumbListCard">
+          <div class="thumbListHead">
+            <h3>List Photos</h3>
+            <span class="muted" id="countInfo">0 files</span>
+          </div>
 
-.select{
-  width:100%;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: #fff;
-  color: var(--text);
-  outline:none;
-}
-.select:focus{ border-color: rgba(37,99,235,.55); box-shadow: 0 0 0 4px rgba(37,99,235,.10); }
+          <div class="thumbListBody" id="photoList">
+            <div class="emptyList" id="emptyList">Belum ada photo. Upload dulu.</div>
+          </div>
 
-#quality{ width: 100%; }
-.qVal{ color: var(--muted); font-size: 13px; min-width: 44px; text-align:right; }
+          <div class="smallNote" style="margin-top:10px;">
+            Klik mana-mana thumbnail untuk <b>Edit crop & position</b>. Siap edit akan keluar ✅.
+          </div>
+        </div>
 
-.toggle{ display:flex; align-items:center; gap:10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
-.toggle input{ display:none; }
+        <div class="actions">
+          <button id="exportBtn" class="btn" disabled>Export All</button>
+          <div class="status" id="status">Ready.</div>
+        </div>
 
-.slider{
-  width: 44px; height: 26px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: #fff;
-  position: relative;
-  transition: .15s ease;
-}
-.slider:after{
-  content:"";
-  position:absolute; top:50%; left:4px;
-  width: 18px; height: 18px;
-  border-radius: 50%;
-  transform: translateY(-50%);
-  background: #cbd5e1;
-  transition: .15s ease;
-}
-.toggle input:checked + .slider{
-  background: rgba(22,163,74,.10);
-  border-color: rgba(22,163,74,.35);
-}
-.toggle input:checked + .slider:after{ left: 22px; background: var(--ok); }
-.toggleText{ color: var(--muted); font-size: 13px; }
+        <div class="progress">
+          <div class="bar" id="bar"></div>
+        </div>
 
-.actions{ margin-top: 12px; }
+        <div class="previewCard">
+          <div class="previewHead">
+            <h3>Preview</h3>
+            <span class="muted">ikut photo dipilih</span>
+          </div>
+          <div class="previewBody">
+            <canvas id="previewCanvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
 
-.btn{
-  width:100%;
-  padding: 12px 14px;
-  border: 0;
-  border-radius: 14px;
-  cursor:pointer;
-  font-weight: 800;
-  color: #fff;
-  background: linear-gradient(90deg, var(--primary), var(--primary2));
-  box-shadow: 0 14px 30px rgba(37,99,235,.20);
-}
-.btn:hover{ filter: brightness(1.02); }
-.btn:disabled{ opacity:.6; cursor:not-allowed; }
+    <footer class="footer">
+      Last Update 20 Feb 2026 by Muin - 003
+    </footer>
+  </main>
 
-.status{ margin-top: 10px; color: var(--muted); font-size: 13px; }
+  <!-- EDIT MODAL -->
+  <div class="modal" id="editModal" aria-hidden="true">
+    <div class="modalInner">
+      <div class="modalHead">
+        <div class="modalTitle">
+          <b id="editTitle">Edit Photo</b>
+          <span class="muted" id="editSub">Drag to move • Zoom to crop</span>
+        </div>
+        <button class="ghost" id="closeModalBtn" type="button">Close</button>
+      </div>
 
-.progress{
-  height: 10px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: #fff;
-  overflow:hidden;
-  margin-top: 10px;
-}
-.bar{
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--primary), var(--primary2));
-  transition: width .15s ease;
-}
+      <div class="modalGrid">
+        <div class="modalCanvasWrap">
+          <canvas id="editCanvas"></canvas>
+          <div class="hintBar">Drag: move • Scroll/Slider: zoom • Double click: reset</div>
+        </div>
 
-.previewCard{
-  margin-top: 12px;
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  background: #fbfbfe;
-  overflow:hidden;
-}
-.previewHead{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--border);
-}
-.previewHead h3{ margin:0; font-size: 14px; }
-.muted{ color: var(--muted); font-size: 12px; }
+        <div class="modalControls">
+          <div class="ctlBlock">
+            <div class="ctlLabel">Zoom</div>
+            <input id="zoomRange" type="range" min="1" max="3" value="1.0" step="0.01" />
+            <div class="ctlMini" id="zoomVal">1.20x</div>
+          </div>
 
-.previewBody{ padding: 12px; display:flex; justify-content:center; }
-#previewCanvas{
-  width: 100%;
-  max-width: 520px;
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  background: #fff;
-}
+          <div class="ctlBlock">
+            <div class="ctlLabel">Rotate</div>
+            <div class="btnRow">
+              <button class="ghost" id="rotLeftBtn" type="button">⟲ -90°</button>
+              <button class="ghost" id="rotRightBtn" type="button">⟳ +90°</button>
+            </div>
+            <div class="ctlMini" id="rotVal">0°</div>
+          </div>
+          
+          <div class="ctlBlock">
+          <div class="ctlLabel">Light (Auto / Manual)</div>
+        
+          <div class="btnRow" style="margin-bottom:10px;">
+            <button class="ghost" id="autoAdjustBtn" type="button">✨ Auto Adjust</button>
+            <button class="ghost" id="clearAdjustBtn" type="button">Reset Light</button>
+          </div>
+        
+          <div class="ctlLabel" style="margin-top:8px;">Brightness</div>
+          <input id="brightRange" type="range" min="-50" max="50" value="0" step="1" />
+          <div class="ctlMini" id="brightVal">0</div>
+        
+          <div class="ctlLabel" style="margin-top:10px;">Shadows</div>
+          <input id="shadowRange" type="range" min="0" max="100" value="0" step="1" />
+          <div class="ctlMini" id="shadowVal">0</div>
+        
+          <div class="smallNote" style="margin-top:10px;">
+            Tip: Auto Adjust dulu, lepas tu fine-tune brightness/shadows kalau perlu.
+          </div>
+        </div>
+          
 
-.panelFoot{ margin-top: 12px; }
-.smallNote{ color: var(--muted); font-size: 12px; }
+          <div class="ctlBlock">
+            <div class="ctlLabel">Actions</div>
+            <div class="btnRow">
+              <button class="ghost" id="resetBtn" type="button">Reset</button>
+              <button class="ghost" id="prevBtn" type="button">Prev</button>
+              <button class="ghost" id="nextBtn" type="button">Next</button>
+            </div>
+          </div>
 
-.footer{
-  margin-top: 14px;
-  color: var(--muted);
-  font-size: 12px;
-  text-align:center;
-}
+          <div class="ctlBlock">
+            <button class="btn" id="saveBtn" type="button">Save (Apply)</button>
+            <div class="smallNote" style="margin-top:10px;">
+              Save akan simpan setting untuk gambar ini. Lepas semua siap, tekan <b>Export All</b>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-/* ====== PHOTO LIST ====== */
-.thumbListCard{
-  margin-top: 12px;
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  background: #fbfbfe;
-  padding: 12px;
-}
-.thumbListHead{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 10px;
-}
-.thumbListHead h3{ margin:0; font-size: 14px; }
-.thumbListBody{
-  display:grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-}
-.emptyList{
-  grid-column: 1 / -1;
-  color: var(--muted);
-  font-size: 13px;
-  padding: 10px 6px;
-}
-
-.photoItem{
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background:#fff;
-  overflow:hidden;
-  cursor:pointer;
-  box-shadow: var(--shadow2);
-  transition: .12s ease;
-  position:relative;
-}
-.photoItem:hover{ transform: translateY(-1px); border-color: rgba(37,99,235,.35); }
-.photoItem img{
-  width:100%;
-  height: 92px;
-  object-fit: cover;
-  display:block;
-}
-.photoMeta{
-  padding: 8px 8px;
-  font-size: 11px;
-  color: var(--muted);
-  border-top: 1px solid var(--border);
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow: ellipsis;
-}
-.editedTag{
-  position:absolute;
-  top: 8px; left: 8px;
-  background: rgba(22,163,74,.92);
-  color:#fff;
-  font-size: 11px;
-  padding: 4px 8px;
-  border-radius: 999px;
-  box-shadow: var(--shadow2);
-  display:none;
-}
-.photoItem.edited .editedTag{ display:inline-block; }
-
-/* ====== MODAL EDITOR ====== */
-.modal{
-  position:fixed;
-  inset:0;
-  background: rgba(15,23,42,.55);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding: 18px;
-  z-index: 50;
-}
-.modal.show{ display:flex; }
-
-.modalInner{
-  width: min(1100px, 96vw);
-  max-height: 92vh;
-  overflow:auto;
-  background: #fff;
-  border-radius: 18px;
-  border: 1px solid rgba(255,255,255,.25);
-  box-shadow: 0 30px 80px rgba(15,23,42,.35);
-}
-.modalHead{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap: 10px;
-  padding: 14px 14px;
-  border-bottom: 1px solid var(--border);
-  background: #fbfbfe;
-}
-.modalTitle{ display:flex; flex-direction:column; gap:4px; }
-
-.modalGrid{
-  display:grid;
-  grid-template-columns: 1.3fr .7fr;
-  gap: 14px;
-  padding: 14px;
-}
-.modalCanvasWrap{
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  background: #fff;
-  overflow:hidden;
-}
-#editCanvas{
-  width: 100%;
-  height: auto;
-  display:block;
-  background:#fff;
-}
-.hintBar{
-  padding: 10px 12px;
-  border-top: 1px solid var(--border);
-  color: var(--muted);
-  font-size: 12px;
-  background: #fbfbfe;
-}
-.modalControls{
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  background:#fbfbfe;
-  padding: 12px;
-}
-.ctlBlock{ padding: 10px 0; border-bottom: 1px solid var(--border); }
-.ctlBlock:last-child{ border-bottom: 0; }
-.ctlLabel{ font-size: 13px; color: var(--muted); margin-bottom: 8px; }
-.ctlMini{ margin-top: 6px; font-size: 12px; color: var(--muted); }
-
-#zoomRange{ width:100%; }
-
-.btnRow{ display:flex; gap: 8px; flex-wrap:wrap; }
-
-/* Save button feedback */
-.btn.saved {
-  background: linear-gradient(90deg, #16a34a, #22c55e);
-  box-shadow: 0 14px 30px rgba(22,163,74,.22);
-  transform: translateY(-1px);
-}
-
-.btn.pop {
-  animation: btnPop .18s ease-out;
-}
-
-
-/* Light controls (optional feel) */
-.ghost:active { transform: translateY(1px); }
-
-@keyframes btnPop {
-  from { transform: scale(.98); }
-  to   { transform: scale(1); }
-}
-
-
-@media (max-width: 920px){
-  .grid{ grid-template-columns: 1fr; }
-  .overlayGrid{ grid-template-columns: 1fr; }
-  .pill{ display:none; }
-  .thumbListBody{ grid-template-columns: repeat(3, 1fr); }
-  .modalGrid{ grid-template-columns: 1fr; }
-}
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
