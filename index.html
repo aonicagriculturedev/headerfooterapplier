@@ -13,7 +13,7 @@
     <header class="top">
       <div>
         <h1>Add Header & Footer to your Images</h1>
-        <p class="sub">Upload banyak foto → auto output width <b>1080px</b> dengan header & footer.</p>
+        <p class="sub">Upload banyak foto → edit crop/position satu-satu → export semua. Output width <b>1080px</b>.</p>
       </div>
       <div class="pill">No server • In-browser</div>
     </header>
@@ -72,7 +72,7 @@
 
         <div class="panelFoot">
           <div class="smallNote">
-            Output width fix <b>1080px</b>. Height ikut ratio foto + overlay.
+            Output width fix <b>1080px</b>. Height ikut <b>Output Height</b> yang kau set (default 1080).
           </div>
         </div>
       </div>
@@ -81,7 +81,7 @@
       <div class="panel">
         <div class="panelHead">
           <h2>Photos</h2>
-          <p>Upload photo banyak. Nanti download 1-1 atau ZIP.</p>
+          <p>Upload photo banyak → edit satu-satu → export semua.</p>
         </div>
 
         <label class="drop big" id="photosDrop">
@@ -93,21 +93,19 @@
           </div>
         </label>
 
-<div class="setRow">
-  <div class="setLabel">Output Height</div>
-  <input id="outHeight" type="number" value="1080" min="200" step="10" class="select" />
-  <div class="qVal">px</div>
-</div>
-
-<label class="toggle">
-  <input id="blurFillToggle" type="checkbox" checked />
-  <span class="slider"></span>
-  <span class="toggleText">Blur background fill</span>
-</label>
-
-
-
         <div class="settings">
+          <div class="setRow">
+            <div class="setLabel">Output Height</div>
+            <input id="outHeight" type="number" value="1080" min="200" step="10" class="select" />
+            <div class="qVal">px</div>
+          </div>
+
+          <label class="toggle">
+            <input id="blurFillToggle" type="checkbox" checked />
+            <span class="slider"></span>
+            <span class="toggleText">Blur background fill</span>
+          </label>
+
           <div class="setRow">
             <div class="setLabel">Format</div>
             <select id="formatSelect" class="select">
@@ -129,8 +127,24 @@
           </label>
         </div>
 
+        <!-- THUMBNAILS LIST -->
+        <div class="thumbListCard">
+          <div class="thumbListHead">
+            <h3>List Photos</h3>
+            <span class="muted" id="countInfo">0 files</span>
+          </div>
+
+          <div class="thumbListBody" id="photoList">
+            <div class="emptyList" id="emptyList">Belum ada photo. Upload dulu.</div>
+          </div>
+
+          <div class="smallNote" style="margin-top:10px;">
+            Klik mana-mana thumbnail untuk <b>Edit crop & position</b>. Siap edit akan keluar ✅.
+          </div>
+        </div>
+
         <div class="actions">
-          <button id="processBtn" class="btn">Process & Download</button>
+          <button id="exportBtn" class="btn" disabled>Export All</button>
           <div class="status" id="status">Ready.</div>
         </div>
 
@@ -141,7 +155,7 @@
         <div class="previewCard">
           <div class="previewHead">
             <h3>Preview</h3>
-            <span class="muted">sample first output</span>
+            <span class="muted">ikut photo dipilih</span>
           </div>
           <div class="previewBody">
             <canvas id="previewCanvas"></canvas>
@@ -151,12 +165,86 @@
     </section>
 
     <footer class="footer">
-      Last Update 19 Feb 2026 by Muin - 002      
+      Last Update 20 Feb 2026 by Muin - 003
     </footer>
   </main>
+
+  <!-- EDIT MODAL -->
+  <div class="modal" id="editModal" aria-hidden="true">
+    <div class="modalInner">
+      <div class="modalHead">
+        <div class="modalTitle">
+          <b id="editTitle">Edit Photo</b>
+          <span class="muted" id="editSub">Drag to move • Zoom to crop</span>
+        </div>
+        <button class="ghost" id="closeModalBtn" type="button">Close</button>
+      </div>
+
+      <div class="modalGrid">
+        <div class="modalCanvasWrap">
+          <canvas id="editCanvas"></canvas>
+          <div class="hintBar">Drag: move • Scroll/Slider: zoom • Double click: reset</div>
+        </div>
+
+        <div class="modalControls">
+          <div class="ctlBlock">
+            <div class="ctlLabel">Zoom</div>
+            <input id="zoomRange" type="range" min="1" max="3" value="1.0" step="0.01" />
+            <div class="ctlMini" id="zoomVal">1.20x</div>
+          </div>
+
+          <div class="ctlBlock">
+            <div class="ctlLabel">Rotate</div>
+            <div class="btnRow">
+              <button class="ghost" id="rotLeftBtn" type="button">⟲ -90°</button>
+              <button class="ghost" id="rotRightBtn" type="button">⟳ +90°</button>
+            </div>
+            <div class="ctlMini" id="rotVal">0°</div>
+          </div>
+          
+          <div class="ctlBlock">
+          <div class="ctlLabel">Light (Auto / Manual)</div>
+        
+          <div class="btnRow" style="margin-bottom:10px;">
+            <button class="ghost" id="autoAdjustBtn" type="button">✨ Auto Adjust</button>
+            <button class="ghost" id="clearAdjustBtn" type="button">Reset Light</button>
+          </div>
+        
+          <div class="ctlLabel" style="margin-top:8px;">Brightness</div>
+          <input id="brightRange" type="range" min="-50" max="50" value="0" step="1" />
+          <div class="ctlMini" id="brightVal">0</div>
+        
+          <div class="ctlLabel" style="margin-top:10px;">Shadows</div>
+          <input id="shadowRange" type="range" min="0" max="100" value="0" step="1" />
+          <div class="ctlMini" id="shadowVal">0</div>
+        
+          <div class="smallNote" style="margin-top:10px;">
+            Tip: Auto Adjust dulu, lepas tu fine-tune brightness/shadows kalau perlu.
+          </div>
+        </div>
+          
+
+          <div class="ctlBlock">
+            <div class="ctlLabel">Actions</div>
+            <div class="btnRow">
+              <button class="ghost" id="resetBtn" type="button">Reset</button>
+              <button class="ghost" id="prevBtn" type="button">Prev</button>
+              <button class="ghost" id="nextBtn" type="button">Next</button>
+            </div>
+          </div>
+
+          <div class="ctlBlock">
+            <button class="btn" id="saveBtn" type="button">Save (Apply)</button>
+            <div class="smallNote" style="margin-top:10px;">
+              Save akan simpan setting untuk gambar ini. Lepas semua siap, tekan <b>Export All</b>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
-
