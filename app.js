@@ -184,6 +184,41 @@ function fitCover(srcW, srcH, dstW, dstH){
   return { x:(dstW - w)/2, y:(dstH - h)/2, w, h, s };
 }
 
+// Safari/macOS fallback: ctx.filter blur kadang tak berfungsi.
+// Teknik: downscale -> upscale (pseudo blur) dalam offscreen canvas.
+function drawBlurCoverFallback(ctx, img, areaX, areaY, areaW, areaH, bg) {
+  const temp = document.createElement("canvas");
+  temp.width = areaW;
+  temp.height = areaH;
+  const t = temp.getContext("2d");
+  t.imageSmoothingEnabled = true;
+
+  // Render cover image ke offscreen (bg coords relative to photo area)
+  t.drawImage(img, bg.x, bg.y, bg.w, bg.h);
+
+  const small = document.createElement("canvas");
+  const scale = 0.12; // kecilkan = blur lagi kuat
+  small.width = Math.max(1, Math.round(areaW * scale));
+  small.height = Math.max(1, Math.round(areaH * scale));
+  const s = small.getContext("2d");
+  s.imageSmoothingEnabled = true;
+
+  // Pass 1
+  s.clearRect(0, 0, small.width, small.height);
+  s.drawImage(temp, 0, 0, temp.width, temp.height, 0, 0, small.width, small.height);
+  t.clearRect(0, 0, temp.width, temp.height);
+  t.drawImage(small, 0, 0, small.width, small.height, 0, 0, temp.width, temp.height);
+
+  // Pass 2 (optional) - tambah blur
+  s.clearRect(0, 0, small.width, small.height);
+  s.drawImage(temp, 0, 0, temp.width, temp.height, 0, 0, small.width, small.height);
+  t.clearRect(0, 0, temp.width, temp.height);
+  t.drawImage(small, 0, 0, small.width, small.height, 0, 0, temp.width, temp.height);
+
+  // Paint balik ke main canvas
+  ctx.drawImage(temp, areaX, areaY);
+}
+
 function drawToCanvas(photoImg, headerImg, footerImg, mimeType) {
   const OUT_W = 1080;
   const OUT_H = parseInt(outHeightInput?.value || "0", 10) || 0; // 0 = auto
@@ -240,18 +275,35 @@ function drawToCanvas(photoImg, headerImg, footerImg, mimeType) {
     ctx.rect(areaX, areaY, areaW, areaH);
     ctx.clip();
 
-    // blur
-    ctx.filter = "blur(22px)";
-    ctx.globalAlpha = 0.95;
+    // Blur (Chrome/Edge ok) + fallback untuk Safari
+    const canFilter = (() => {
+      try {
+        return typeof ctx.filter === "string";
+      } catch (e) {
+        return false;
+      }
+    })();
 
-    ctx.drawImage(
-      photoImg,
-      areaX + bg.x, areaY + bg.y,
-      bg.w, bg.h
-    );
+    if (canFilter) {
+      ctx.filter = "blur(22px)";
+      ctx.globalAlpha = 0.95;
+
+      ctx.drawImage(
+        photoImg,
+        areaX + bg.x, areaY + bg.y,
+        bg.w, bg.h
+      );
+
+      ctx.filter = "none";
+      ctx.globalAlpha = 1;
+    } else {
+      // Safari fallback
+      ctx.globalAlpha = 0.95;
+      drawBlurCoverFallback(ctx, photoImg, areaX, areaY, areaW, areaH, bg);
+      ctx.globalAlpha = 1;
+    }
 
     // optional: darken sedikit supaya subject naik
-    ctx.filter = "none";
     ctx.globalAlpha = 0.18;
     ctx.fillStyle = "#000";
     ctx.fillRect(areaX, areaY, areaW, areaH);
