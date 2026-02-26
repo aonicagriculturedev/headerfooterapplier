@@ -498,7 +498,12 @@ function drawEditedPhotoIntoArea(ctx, img, areaX, areaY, areaW, areaH, edit){
   // apply brightness filter only when b != 0
   if (b !== 0) ctx.filter = `brightness(${brightMul})`;
 
-  ctx.drawImage(src, -src.width / 2, -src.height / 2);
+  // IMPORTANT: keep geometry based on original img size (avoid zoom shifting when src is processed smaller)
+if (src !== img) {
+  ctx.drawImage(src, -img.width / 2, -img.height / 2, img.width, img.height);
+} else {
+  ctx.drawImage(img, -img.width / 2, -img.height / 2);
+}
 
   ctx.filter = "none";
   ctx.restore();
@@ -1161,5 +1166,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
   setStatus("Ready.");
 });
+
 
 
