@@ -14,6 +14,57 @@
   --warn:#f59e0b;
 }
 
+/* ====== THEME (Dark Mode) ====== */
+:root[data-theme="dark"]{
+  --bg: #0b1220;
+  --card: rgba(15, 23, 42, .92);
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --border: rgba(148,163,184,.20);
+  --shadow: 0 12px 32px rgba(0,0,0,.35);
+  --shadow2: 0 6px 18px rgba(0,0,0,.25);
+
+  --primary: #60a5fa;
+  --primary2:#a78bfa;
+  --ok: #22c55e;
+  --warn:#fbbf24;
+}
+
+:root[data-theme="dark"] body{
+  background:
+    radial-gradient(900px 500px at 20% 0%, rgba(96,165,250,.16), transparent 60%),
+    radial-gradient(700px 500px at 95% 10%, rgba(167,139,250,.14), transparent 55%),
+    var(--bg);
+}
+
+:root[data-theme="dark"] .overlayCard,
+:root[data-theme="dark"] .settings,
+:root[data-theme="dark"] .previewCard,
+:root[data-theme="dark"] .thumbListCard,
+:root[data-theme="dark"] .modalHead{
+  background: rgba(15,23,42,.55);
+}
+
+:root[data-theme="dark"] .drop{
+  background: linear-gradient(180deg, rgba(15,23,42,.65), rgba(15,23,42,.45));
+}
+
+:root[data-theme="dark"] .select,
+:root[data-theme="dark"] .ghost{
+  background: rgba(2,6,23,.35);
+  border-color: rgba(148,163,184,.22);
+  color: var(--text);
+}
+
+:root[data-theme="dark"] #previewCanvas,
+:root[data-theme="dark"] .thumbWrap,
+:root[data-theme="dark"] .photoItem,
+:root[data-theme="dark"] .modalInner,
+:root[data-theme="dark"] .modalCanvasWrap{
+  background: rgba(2,6,23,.35);
+}
+
+
 *{ box-sizing:border-box; }
 html,body{ height:100%; }
 body{
@@ -52,7 +103,15 @@ h1{ margin:0; font-size: 24px; letter-spacing:.2px; }
   box-shadow: var(--shadow2);
   white-space:nowrap;
 }
+.topRight{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
 
+.themeBtn{
+  white-space: nowrap;
+}
 .grid{ display:grid; grid-template-columns: 1fr 1.1fr; gap: 14px; }
 
 .panel{
