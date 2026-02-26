@@ -1123,6 +1123,31 @@ exportBtn?.addEventListener("click", async () => {
 // Init
 // ==========================
 window.addEventListener("DOMContentLoaded", () => {
+  
+    // ====== THEME TOGGLE (Dark Mode) ======
+  const themeBtn = document.getElementById("themeToggle");
+
+  function applyTheme(mode){
+    // mode: "dark" | "light"
+    document.documentElement.setAttribute("data-theme", mode);
+    localStorage.setItem("theme", mode);
+    if (themeBtn) themeBtn.textContent = (mode === "dark") ? "☀️ Light" : "🌙 Dark";
+  }
+
+  // init theme: saved > system preference
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === "dark" || savedTheme === "light") {
+    applyTheme(savedTheme);
+  } else {
+    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    applyTheme(prefersDark ? "dark" : "light");
+  }
+
+  themeBtn?.addEventListener("click", () => {
+    const cur = document.documentElement.getAttribute("data-theme") || "light";
+    applyTheme(cur === "dark" ? "light" : "dark");
+  });
+  
   loadOverlayFromStorage("header");
   loadOverlayFromStorage("footer");
 
