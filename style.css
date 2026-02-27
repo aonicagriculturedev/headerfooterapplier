@@ -362,12 +362,6 @@ h1{ margin:0; font-size: 24px; letter-spacing:.2px; }
 }
 @font-face {
   font-family: "Gilroy";
-  src: url("fonts/Gilroy-BoldItalic.ttf") format("truetype");
-  font-weight: 700;
-  font-style: italic;
-}
-@font-face {
-  font-family: "Gilroy";
   src: url("fonts/Gilroy-Thin.ttf") format("truetype");
   font-weight: 100;
 }
