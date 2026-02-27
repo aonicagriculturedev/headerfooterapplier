@@ -58,12 +58,37 @@ const brightVal = document.getElementById("brightVal");
 const shadowRange = document.getElementById("shadowRange");
 const shadowVal = document.getElementById("shadowVal");
 
+// ===== WATERMARK controls (optional) =====
+const wmEnable = document.getElementById("wmEnable");
+const wmText = document.getElementById("wmText");
+const wmSize = document.getElementById("wmSize");
+const wmOpacity = document.getElementById("wmOpacity");
+const wmPos = document.getElementById("wmPos");
+const wmRotate = document.getElementById("wmRotate");
+const wmMargin = document.getElementById("wmMargin");
+const wmSizeVal = document.getElementById("wmSizeVal");
+const wmOpacityVal = document.getElementById("wmOpacityVal");
+const wmRotateVal = document.getElementById("wmRotateVal");
+const wmMarginVal = document.getElementById("wmMarginVal");
+const wmFont = document.getElementById("wmFont");
+const wmWeight = document.getElementById("wmWeight");
+const wmBold = document.getElementById("wmBold");
+const wmShadow = document.getElementById("wmShadow");
+const wmStroke = document.getElementById("wmStroke");
+const wmStrokeW = document.getElementById("wmStrokeW");
+const wmStrokeWVal = document.getElementById("wmStrokeWVal");
+
+const wmGradient = document.getElementById("wmGradient");
+const wmGradType = document.getElementById("wmGradType");
+const wmGradA = document.getElementById("wmGradA");
+const wmGradB = document.getElementById("wmGradB");
+
+
+
 const OUT_W = 1080;
 
 const DEFAULT_HEADER_FILE = "header001.png";
 const DEFAULT_FOOTER_FILE = "footer001.png";
-
-
 
 let headerImg = null;
 let footerImg = null;
@@ -106,6 +131,328 @@ function setThumb(imgEl, emptyEl, file){
   imgEl.src = URL.createObjectURL(file);
   imgEl.style.display = "block";
   emptyEl.style.display = "none";
+}
+
+// ==========================
+// WATERMARK state + persistence
+// ==========================
+const wmState = {
+  enabled: false,
+  text: "Aonic Agriculture",
+  size: 36,
+  opacity: 0.18,   // 0..1
+  pos: "br",       // br bl tr tl center tile
+  rotate: -20,     // deg
+  margin: 20,      // px
+  font: "Gilroy",
+  weight: 400,
+  bold: false,
+  
+  shadow: true,
+  
+  stroke: true,
+  strokeW: 3,
+  
+  gradient: false,
+  gradType: "lr",
+  gradA: "#ffffff",
+  gradB: "#7c3aed",
+};
+
+function loadWatermarkFromStorage(){
+  try {
+    const raw = localStorage.getItem("watermark_state");
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === "object") {
+      Object.assign(wmState, parsed);
+      // guard
+      wmState.opacity = Math.max(0, Math.min(1, Number(wmState.opacity ?? 0.18)));
+      wmState.size = Number(wmState.size ?? 36);
+      wmState.rotate = Number(wmState.rotate ?? -20);
+      wmState.margin = Number(wmState.margin ?? 20);
+      wmState.enabled = !!wmState.enabled;
+      wmState.text = String(wmState.text ?? "Aonic Agriculture");
+      wmState.pos = String(wmState.pos ?? "br");
+    }
+  } catch (e) {
+    console.warn("watermark_state parse fail", e);
+  }
+}
+
+function saveWatermarkToStorage(){
+  try {
+    localStorage.setItem("watermark_state", JSON.stringify(wmState));
+  } catch (e) {
+    console.warn("watermark_state save fail", e);
+  }
+}
+
+function syncWmUIFromState(){
+  wmEnable && (wmEnable.checked = !!wmState.enabled);
+  wmText && (wmText.value = wmState.text || "");
+  wmSize && (wmSize.value = String(wmState.size || 36));
+  wmOpacity && (wmOpacity.value = String(Math.round((wmState.opacity ?? 0.18) * 100)));
+  wmPos && (wmPos.value = wmState.pos || "br");
+  wmRotate && (wmRotate.value = String(wmState.rotate ?? -20));
+  wmMargin && (wmMargin.value = String(wmState.margin ?? 20));
+  wmSizeVal && (wmSizeVal.textContent = String(wmState.size || 36));
+  wmOpacityVal && (wmOpacityVal.textContent = `${Math.round((wmState.opacity ?? 0.18) * 100)}%`);
+  wmRotateVal && (wmRotateVal.textContent = `${wmState.rotate ?? -20}°`);
+  wmMarginVal && (wmMarginVal.textContent = String(wmState.margin ?? 20));
+  wmFont && (wmFont.value = wmState.font || "Gilroy");
+  wmWeight && (wmWeight.value = String(wmState.weight ?? 400));
+  wmBold && (wmBold.checked = !!wmState.bold);
+  
+  wmShadow && (wmShadow.checked = !!wmState.shadow);
+  
+  wmStroke && (wmStroke.checked = !!wmState.stroke);
+  wmStrokeW && (wmStrokeW.value = String(wmState.strokeW ?? 3));
+  wmStrokeWVal && (wmStrokeWVal.textContent = String(wmState.strokeW ?? 3));
+  
+  wmGradient && (wmGradient.checked = !!wmState.gradient);
+  wmGradType && (wmGradType.value = wmState.gradType || "lr");
+  wmGradA && (wmGradA.value = wmState.gradA || "#ffffff");
+  wmGradB && (wmGradB.value = wmState.gradB || "#7c3aed");
+}
+
+function syncWmStateFromUI(){
+  if (wmEnable) wmState.enabled = !!wmEnable.checked;
+  if (wmText) wmState.text = (wmText.value || "").trim();
+  if (wmSize) wmState.size = Number(wmSize.value || 36);
+  if (wmOpacity) wmState.opacity = Number(wmOpacity.value || 18) / 100;
+  if (wmPos) wmState.pos = wmPos.value || "br";
+  if (wmRotate) wmState.rotate = Number(wmRotate.value || -20);
+  if (wmMargin) wmState.margin = Number(wmMargin.value || 20);
+  if (wmFont) wmState.font = wmFont.value || "Inter";
+  if (wmWeight) wmState.weight = Number(wmWeight.value || 400);
+  if (wmBold) wmState.bold = !!wmBold.checked;
+  
+  if (wmShadow) wmState.shadow = !!wmShadow.checked;
+  
+  if (wmStroke) wmState.stroke = !!wmStroke.checked;
+  if (wmStrokeW) wmState.strokeW = Number(wmStrokeW.value || 3);
+  wmStrokeWVal && (wmStrokeWVal.textContent = String(wmState.strokeW));
+  
+  if (wmGradient) wmState.gradient = !!wmGradient.checked;
+  if (wmGradType) wmState.gradType = wmGradType.value || "lr";
+  if (wmGradA) wmState.gradA = wmGradA.value || "#ffffff";
+  if (wmGradB) wmState.gradB = wmGradB.value || "#7c3aed";
+  
+  
+  
+  
+    wmSizeVal && (wmSizeVal.textContent = String(wmState.size));
+wmOpacityVal && (wmOpacityVal.textContent = `${Math.round(wmState.opacity * 100)}%`);
+wmRotateVal && (wmRotateVal.textContent = `${wmState.rotate}°`);
+wmMarginVal && (wmMarginVal.textContent = String(wmState.margin));
+
+  saveWatermarkToStorage();
+  requestRender();
+  
+
+}
+
+function bindWatermarkEvents(){
+  const els = [wmEnable, wmText, wmSize, wmOpacity, wmPos, wmRotate, wmMargin,
+  wmFont, wmWeight, wmBold,
+  wmShadow,
+  wmStroke, wmStrokeW,
+  wmGradient, wmGradType, wmGradA, wmGradB];
+  els.forEach(el => {
+    el?.addEventListener("input", syncWmStateFromUI);
+    el?.addEventListener("change", syncWmStateFromUI);
+  });
+}
+
+
+
+
+
+// ==========================
+// Watermark Renderer (TEXT)
+// ==========================
+// Expects wm object shape (example):
+// {
+//   enabled:true,
+//   text:"Aonic Agriculture",
+//   size:36,
+//   opacity:0.18,        // 0..1
+//   pos:"br",            // br|bl|tr|tl|center|tile
+//   rotate:-20,          // deg
+//   margin:20,           // px
+//   font:"Inter",
+//   weight:400,          // 300..800
+//   bold:false,          // boolean (override weight to 800)
+//   shadow:true,         // boolean
+//   stroke:true,         // boolean
+//   strokeW:3,           // px
+//   gradient:false,      // boolean
+//   gradType:"lr",       // lr|diag
+//   gradA:"#ffffff",
+//   gradB:"#7c3aed"
+// }
+
+function drawTextWatermark(ctx, W, H, wm) {
+  if (!wm || !wm.enabled) return;
+
+  const text = (wm.text ?? "").trim();
+  if (!text) return;
+
+  const size = Math.max(10, Number(wm.size || 36));
+  const opacity01 = Math.max(0, Math.min(1, Number(wm.opacity ?? 0.18)));
+  const margin = Math.max(0, Number(wm.margin || 20));
+  const pos = wm.pos || "br";
+  const rotateDeg = Number(wm.rotate || 0);
+
+  // Font
+  const family = wm.font || "Inter";
+  const weight = wm.bold ? 800 : Math.max(100, Math.min(900, Number(wm.weight ?? 400)));
+  ctx.font = `${weight} ${size}px ${family}`;
+  ctx.textBaseline = "alphabetic";
+  ctx.textAlign = "left";
+
+  // Opacity (applies to everything)
+  ctx.save();
+  ctx.globalAlpha = opacity01;
+
+  // Shadow toggle
+  if (wm.shadow) {
+    ctx.shadowColor = "rgba(0,0,0,.45)";
+    ctx.shadowBlur = Math.max(2, Math.round(size * 0.18));
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = Math.max(1, Math.round(size * 0.10));
+  } else {
+    ctx.shadowColor = "transparent";
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+  }
+
+  // Stroke toggle
+  const strokeOn = !!wm.stroke;
+  const strokeW = Math.max(0, Number(wm.strokeW ?? 3));
+  ctx.lineJoin = "round";
+  ctx.miterLimit = 2;
+  ctx.lineWidth = strokeOn ? strokeW : 0;
+  ctx.strokeStyle = "rgba(0,0,0,.55)";
+
+  // Fill: solid or gradient
+  if (wm.gradient) {
+    const a = wm.gradA || "#ffffff";
+    const b = wm.gradB || "#7c3aed";
+    const type = wm.gradType || "lr";
+
+    let g;
+    if (type === "diag") {
+      g = ctx.createLinearGradient(0, 0, W, H);
+    } else {
+      g = ctx.createLinearGradient(0, 0, W, 0);
+    }
+    g.addColorStop(0, a);
+    g.addColorStop(1, b);
+    ctx.fillStyle = g;
+  } else {
+    ctx.fillStyle = "rgba(255,255,255,.95)";
+  }
+
+  // Helper: draw text centered at (x,y) but respecting rotation
+  function drawAt(x, y) {
+    ctx.save();
+    ctx.translate(x, y);
+    if (rotateDeg) ctx.rotate((rotateDeg * Math.PI) / 180);
+
+    // Draw with anchor at baseline-left by default; we’ll use measureText offsets
+    // Make it centered for consistent positioning
+    const m = ctx.measureText(text);
+    const w = m.width;
+    const ascent = m.actualBoundingBoxAscent || size * 0.8;
+    const descent = m.actualBoundingBoxDescent || size * 0.2;
+    const h = ascent + descent;
+
+    // Shift so (0,0) becomes center
+    const dx = -w / 2;
+    const dy = h / 2 - descent; // baseline offset
+
+    if (strokeOn && strokeW > 0) ctx.strokeText(text, dx, dy);
+    ctx.fillText(text, dx, dy);
+
+    ctx.restore();
+  }
+
+  // Compute anchor point by position
+  const m = ctx.measureText(text);
+  const textW = m.width;
+  const ascent = m.actualBoundingBoxAscent || size * 0.8;
+  const descent = m.actualBoundingBoxDescent || size * 0.2;
+  const textH = ascent + descent;
+
+  let x = W / 2;
+  let y = H / 2;
+
+  if (pos === "br") {
+    x = W - margin - textW / 2;
+    y = H - margin - textH / 2;
+  } else if (pos === "bl") {
+    x = margin + textW / 2;
+    y = H - margin - textH / 2;
+  } else if (pos === "tr") {
+    x = W - margin - textW / 2;
+    y = margin + textH / 2;
+  } else if (pos === "tl") {
+    x = margin + textW / 2;
+    y = margin + textH / 2;
+  } else if (pos === "center") {
+    x = W / 2;
+    y = H / 2;
+  }
+
+  if (pos === "tile") {
+    // Tile repeat
+    // Spacing based on size so it looks consistent
+    const stepX = Math.max(140, Math.round(textW + size * 2.2));
+    const stepY = Math.max(90, Math.round(textH + size * 1.6));
+
+    // Rotate whole tiling field for "watermark" feel (still respects rotateDeg)
+    // We'll do rotation per drawAt already, so here we just loop grid.
+    for (let yy = -H; yy < H * 2; yy += stepY) {
+      for (let xx = -W; xx < W * 2; xx += stepX) {
+        drawAt(xx + (stepX / 2), yy + (stepY / 2));
+      }
+    }
+  } else {
+    // Single watermark
+    drawAt(x, y);
+  }
+
+  ctx.restore();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// requestRender helper (safe)
+function requestRender(){
+  // if editor open -> redraw editor too
+  if (editModal?.classList.contains("show")) {
+    redrawEditor();
+  }
+  refreshPreview();
 }
 
 // ====== LOCAL STORAGE (overlays only) ======
@@ -495,15 +842,14 @@ function drawEditedPhotoIntoArea(ctx, img, areaX, areaY, areaW, areaH, edit){
   ctx.rotate(rot);
   ctx.scale(scale, scale);
 
-  // apply brightness filter only when b != 0
   if (b !== 0) ctx.filter = `brightness(${brightMul})`;
 
   // IMPORTANT: keep geometry based on original img size (avoid zoom shifting when src is processed smaller)
-if (src !== img) {
-  ctx.drawImage(src, -img.width / 2, -img.height / 2, img.width, img.height);
-} else {
-  ctx.drawImage(img, -img.width / 2, -img.height / 2);
-}
+  if (src !== img) {
+    ctx.drawImage(src, -img.width / 2, -img.height / 2, img.width, img.height);
+  } else {
+    ctx.drawImage(img, -img.width / 2, -img.height / 2);
+  }
 
   ctx.filter = "none";
   ctx.restore();
@@ -575,6 +921,9 @@ function drawToCanvas(photoImg, mimeType, edit) {
   if (footerImg) {
     ctx.drawImage(footerImg, 0, y, OUT_W, footerH);
   }
+
+  // ===== WATERMARK (always LAST so it won't affect zoom/crop/shadow) =====
+  drawTextWatermark(ctx, canvas.width, canvas.height, wmState);
 
   return canvas;
 }
@@ -788,6 +1137,19 @@ editModal?.addEventListener("click", (e) => {
   if (e.target === editModal) closeEditor();
 });
 
+// Close editor modal with ESC key
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    if (editModal?.classList.contains("show")) {
+      closeEditor();
+    }
+  }
+});
+
+document.getElementById("wmFont")?.addEventListener("change", () => {
+  refreshPreview();
+});
+
 function redrawEditor(){
   if (currentIndex < 0) return;
   const it = photoItems[currentIndex];
@@ -998,12 +1360,10 @@ saveBtn?.addEventListener("click", () => {
 
   // ✅ Auto close modal lepas nampak feedback sekejap
   setTimeout(() => {
-    // restore button for next open
     saveBtn.textContent = originalText || "Save (Apply)";
     saveBtn.classList.remove("saved");
     saveBtn.disabled = false;
 
-    // close modal (discard draft, keep committed)
     closeEditor();
   }, 650);
 });
@@ -1021,12 +1381,6 @@ nextBtn?.addEventListener("click", () => {
 // ==========================
 // Export / ZIP
 // ==========================
-function canvasToBlob(canvas, mimeType, jpgQuality=0.92) {
-  return new Promise((resolve) => {
-    canvas.toBlob((blob) => resolve(blob), mimeType, jpgQuality);
-  });
-}
-
 function downloadBlob(blob, filename) {
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
@@ -1048,10 +1402,8 @@ exportBtn?.addEventListener("click", async () => {
   const ext = mimeType === "image/png" ? "png" : "jpg";
   const jpgQ = parseInt(quality.value, 10) / 100;
 
-  // helper: bagi browser "bernafas"
   const yieldUI = () => new Promise(resolve => setTimeout(resolve, 0));
 
-  // ZIP availability guard
   let zipMode = !!zipToggle.checked;
   const hasJSZip = typeof JSZip !== "undefined";
 
@@ -1062,14 +1414,12 @@ exportBtn?.addEventListener("click", async () => {
 
   const zip = zipMode ? new JSZip() : null;
 
-  // safer blob creator (fallback to dataURL)
   async function canvasToBlobSafe(canvas) {
     const blob = await new Promise((resolve) => {
       canvas.toBlob((b) => resolve(b), mimeType, jpgQ);
     });
     if (blob) return blob;
 
-    // fallback: toDataURL -> Blob
     const dataUrl = canvas.toDataURL(mimeType, jpgQ);
     const res = await fetch(dataUrl);
     return await res.blob();
@@ -1103,7 +1453,6 @@ exportBtn?.addEventListener("click", async () => {
       setProgress(pct);
       setStatus(`Done ${i + 1}/${photoItems.length}`);
 
-      // anti-freeze: yield setiap 2 gambar
       if ((i + 1) % 2 === 0) await yieldUI();
     }
 
@@ -1128,18 +1477,28 @@ exportBtn?.addEventListener("click", async () => {
 // Init
 // ==========================
 window.addEventListener("DOMContentLoaded", () => {
-  
-    // ====== THEME TOGGLE (Dark Mode) ======
+
+  // ====== THEME TOGGLE (Dark Mode) ======
   const themeBtn = document.getElementById("themeToggle");
 
+  // ZIP toggle remember state
+  const savedZip = localStorage.getItem("zip_default");
+  if (savedZip !== null) {
+    zipToggle.checked = savedZip === "true";
+  } else {
+    zipToggle.checked = false; // default OFF
+  }
+  
+  zipToggle?.addEventListener("change", () => {
+    localStorage.setItem("zip_default", zipToggle.checked);
+  });
+
   function applyTheme(mode){
-    // mode: "dark" | "light"
     document.documentElement.setAttribute("data-theme", mode);
     localStorage.setItem("theme", mode);
     if (themeBtn) themeBtn.textContent = (mode === "dark") ? "☀️ Light" : "🌙 Dark";
   }
 
-  // init theme: saved > system preference
   const savedTheme = localStorage.getItem("theme");
   if (savedTheme === "dark" || savedTheme === "light") {
     applyTheme(savedTheme);
@@ -1152,7 +1511,12 @@ window.addEventListener("DOMContentLoaded", () => {
     const cur = document.documentElement.getAttribute("data-theme") || "light";
     applyTheme(cur === "dark" ? "light" : "dark");
   });
-  
+
+  // ====== WATERMARK INIT ======
+  loadWatermarkFromStorage();
+  syncWmUIFromState();
+  bindWatermarkEvents();
+
   loadOverlayFromStorage("header");
   loadOverlayFromStorage("footer");
 
@@ -1166,6 +1530,3 @@ window.addEventListener("DOMContentLoaded", () => {
 
   setStatus("Ready.");
 });
-
-
-
