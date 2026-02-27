@@ -224,7 +224,7 @@ function syncWmStateFromUI(){
   if (wmPos) wmState.pos = wmPos.value || "br";
   if (wmRotate) wmState.rotate = Number(wmRotate.value || -20);
   if (wmMargin) wmState.margin = Number(wmMargin.value || 20);
-  if (wmFont) wmState.font = wmFont.value || "Inter";
+  if (wmFont) wmState.font = wmFont.value || "Gilroy";
   if (wmWeight) wmState.weight = Number(wmWeight.value || 400);
   if (wmBold) wmState.bold = !!wmBold.checked;
   
@@ -305,16 +305,29 @@ function drawTextWatermark(ctx, W, H, wm) {
   const pos = wm.pos || "br";
   const rotateDeg = Number(wm.rotate || 0);
 
-  // Font
-  const family = wm.font || "Inter";
-  const weight = wm.bold ? 800 : Math.max(100, Math.min(900, Number(wm.weight ?? 400)));
+  // ===== FONT (Cara A: Gilroy + weight, other fonts = normal) =====
+  // NOTE: wm.weight boleh jadi "auto" (string) bila font bukan Gilroy
+  const chosenFont = (wm.font || "Gilroy");
+  const family = `${chosenFont}, Inter, Arial, sans-serif`;
+
+  let weight = 400;
+  if (wm.bold) {
+    weight = 800;
+  } else if (chosenFont === "Gilroy") {
+    const wRaw = wm.weight;
+    const wNum = Number(wRaw ?? 400);
+    weight = Math.max(100, Math.min(900, isNaN(wNum) ? 400 : wNum));
+  } else {
+    // font lain: biar normal (tak pakai Thin/Light UI)
+    weight = 400;
+  }
+
+  ctx.save();
+  ctx.globalAlpha = opacity01;
+
   ctx.font = `${weight} ${size}px ${family}`;
   ctx.textBaseline = "alphabetic";
   ctx.textAlign = "left";
-
-  // Opacity (applies to everything)
-  ctx.save();
-  ctx.globalAlpha = opacity01;
 
   // Shadow toggle
   if (wm.shadow) {
@@ -344,11 +357,9 @@ function drawTextWatermark(ctx, W, H, wm) {
     const type = wm.gradType || "lr";
 
     let g;
-    if (type === "diag") {
-      g = ctx.createLinearGradient(0, 0, W, H);
-    } else {
-      g = ctx.createLinearGradient(0, 0, W, 0);
-    }
+    if (type === "diag") g = ctx.createLinearGradient(0, 0, W, H);
+    else g = ctx.createLinearGradient(0, 0, W, 0);
+
     g.addColorStop(0, a);
     g.addColorStop(1, b);
     ctx.fillStyle = g;
@@ -356,21 +367,18 @@ function drawTextWatermark(ctx, W, H, wm) {
     ctx.fillStyle = "rgba(255,255,255,.95)";
   }
 
-  // Helper: draw text centered at (x,y) but respecting rotation
+  // Helper: draw centered text at (x,y) with rotation
   function drawAt(x, y) {
     ctx.save();
     ctx.translate(x, y);
     if (rotateDeg) ctx.rotate((rotateDeg * Math.PI) / 180);
 
-    // Draw with anchor at baseline-left by default; we’ll use measureText offsets
-    // Make it centered for consistent positioning
     const m = ctx.measureText(text);
     const w = m.width;
     const ascent = m.actualBoundingBoxAscent || size * 0.8;
     const descent = m.actualBoundingBoxDescent || size * 0.2;
     const h = ascent + descent;
 
-    // Shift so (0,0) becomes center
     const dx = -w / 2;
     const dy = h / 2 - descent; // baseline offset
 
@@ -380,11 +388,11 @@ function drawTextWatermark(ctx, W, H, wm) {
     ctx.restore();
   }
 
-  // Compute anchor point by position
-  const m = ctx.measureText(text);
-  const textW = m.width;
-  const ascent = m.actualBoundingBoxAscent || size * 0.8;
-  const descent = m.actualBoundingBoxDescent || size * 0.2;
+  // Measure for position anchors
+  const mt = ctx.measureText(text);
+  const textW = mt.width;
+  const ascent = mt.actualBoundingBoxAscent || size * 0.8;
+  const descent = mt.actualBoundingBoxDescent || size * 0.2;
   const textH = ascent + descent;
 
   let x = W / 2;
@@ -408,20 +416,15 @@ function drawTextWatermark(ctx, W, H, wm) {
   }
 
   if (pos === "tile") {
-    // Tile repeat
-    // Spacing based on size so it looks consistent
     const stepX = Math.max(140, Math.round(textW + size * 2.2));
     const stepY = Math.max(90, Math.round(textH + size * 1.6));
 
-    // Rotate whole tiling field for "watermark" feel (still respects rotateDeg)
-    // We'll do rotation per drawAt already, so here we just loop grid.
     for (let yy = -H; yy < H * 2; yy += stepY) {
       for (let xx = -W; xx < W * 2; xx += stepX) {
-        drawAt(xx + (stepX / 2), yy + (stepY / 2));
+        drawAt(xx + stepX / 2, yy + stepY / 2);
       }
     }
   } else {
-    // Single watermark
     drawAt(x, y);
   }
 
@@ -947,6 +950,24 @@ function refreshPreview(){
   pctx.clearRect(0,0,previewCanvas.width,previewCanvas.height);
   pctx.drawImage(canvas, 0, 0);
 }
+
+function updateWeightUI(){
+  if (!wmFont || !wmWeight) return;
+
+  const isGilroy = wmFont.value === "Gilroy";
+  wmWeight.disabled = !isGilroy;
+
+  // kalau bukan Gilroy, paksa Auto supaya UI tak mengarut
+  if (!isGilroy) wmWeight.value = "auto";
+}
+
+wmFont?.addEventListener("change", () => {
+  syncWmStateFromUI();
+  updateWeightUI();
+  refreshPreview();
+});
+
+updateWeightUI();
 
 // ==========================
 // Photos loading + list UI
