@@ -5,26 +5,36 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Photo's Header & Footer Applier</title>
   <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 </head>
+
 <body>
   <div class="bg"></div>
 
   <main class="wrap">
+    <!-- TOP HEADER -->
     <header class="top">
       <div>
         <h1>Add Header & Footer to your Images</h1>
-        <p class="sub">Upload banyak foto → edit crop/position satu-satu → export semua. Output width <b>1080px</b>.</p>
+        <p class="sub">
+          Upload banyak foto → edit crop/position satu-satu → export semua.
+          Output width <b>1080px</b>.
+        </p>
       </div>
-      <div class="topRight">
 
-      <div class="pill">No server • In-browser</div>
-      <button class="ghost themeBtn" id="themeToggle" type="button" aria-label="Toggle dark mode">
-    Toggle DarkMode
-  </button>
+      <div class="topRight">
+        <div class="pill">No server • In-browser</div>
+        <button class="ghost themeBtn" id="themeToggle" type="button" aria-label="Toggle dark mode">
+          🌙 Dark
+        </button>
+      </div>
     </header>
 
+    <!-- ===== ROW 1: Overlays (left) + Photos (right) ===== -->
     <section class="grid">
-      <!-- LEFT -->
+      <!-- LEFT: OVERLAYS -->
       <div class="panel">
         <div class="panelHead">
           <h2>Overlays</h2>
@@ -32,6 +42,7 @@
         </div>
 
         <div class="overlayGrid">
+          <!-- HEADER CARD -->
           <div class="overlayCard">
             <div class="overlayTop">
               <div class="badge">Header</div>
@@ -53,6 +64,7 @@
             </div>
           </div>
 
+          <!-- FOOTER CARD -->
           <div class="overlayCard">
             <div class="overlayTop">
               <div class="badge">Footer</div>
@@ -77,12 +89,13 @@
 
         <div class="panelFoot">
           <div class="smallNote">
-            Output width fix <b>1080px</b>. Height ikut <b>Output Height</b> yang kau set (default 1080).
+            Output width fix <b>1080px</b>. Height ikut <b>Output Height</b> yang anda set (default 1080).
+            Default Header dan footer telah ditetapkan, kalau nak gantikan, silakan ganti, tapi once tekan clear, akan reset semula ke header & footer yang asal
           </div>
         </div>
       </div>
 
-      <!-- RIGHT -->
+      <!-- RIGHT: PHOTOS -->
       <div class="panel">
         <div class="panelHead">
           <h2>Photos</h2>
@@ -126,13 +139,13 @@
           </div>
 
           <label class="toggle">
-            <input id="zipToggle" type="checkbox" checked />
+            <input id="zipToggle" type="checkbox"  />
             <span class="slider"></span>
             <span class="toggleText">Download sebagai ZIP</span>
           </label>
         </div>
 
-        <!-- THUMBNAILS LIST -->
+        <!-- LIST PHOTOS (inside Photos panel like your sketch) -->
         <div class="thumbListCard">
           <div class="thumbListHead">
             <h3>List Photos</h3>
@@ -156,23 +169,190 @@
         <div class="progress">
           <div class="bar" id="bar"></div>
         </div>
-
-        <div class="previewCard">
-          <div class="previewHead">
-            <h3>Preview</h3>
-            <span class="muted">ikut photo dipilih</span>
-          </div>
-          <div class="previewBody">
-            <canvas id="previewCanvas"></canvas>
-          </div>
-        </div>
       </div>
     </section>
 
-    <footer class="footer">
-      Last Update 21 Feb 2026 by Muin - 004
-    </footer>
+    <!-- divider line macam sketch -->
+    <div class="sectionDivider"></div>
+<br>
+    <!-- ===== ROW 2: Watermark (left) + Preview (right) ===== -->
+    <section class="grid">
+      <!-- LEFT: WATERMARK -->
+      <div class="panel">
+        
+
+        <!-- NOTE: buang wmImg/wmScale kalau tak pakai image watermark.
+             Kalau nak pakai nanti, kita tambah semula. -->
+
+        <div class="card wmCard">
+          <div class="wmHead">
+            <div class="wmTitle">Watermark</div>
+
+            <label class="wmToggle">
+              <input type="checkbox" id="wmEnable">
+              <span>Enable</span>
+            </label>
+          </div>
+
+          <div class="wmGrid">
+            
+            <div class="wmField wmSpan2">
+              <label class="wmLabel">Text</label>
+              <input id="wmText" class="select wmInput" type="text" placeholder="Aonic Agriculture" />
+            </div>
+            
+<div class="wmField">
+  <label class="wmLabel">Font</label>
+  <select id="wmFont" class="select">
+    <option value="Gilroy">Gilroy</option>
+    <option value="Poppins">Poppins</option>
+    <option value="Inter">Inter</option>
+    <option value="Arial">Arial</option>
+    <option value="Georgia">Georgia</option>
+    <option value="Courier New">Courier New</option>
+    <option value="Open Sans">Open Sans</option>
+
+  </select>
+</div>
+
+            <div class="wmField">
+              <label class="wmLabel">Size</label>
+              <div class="wmRange">
+                <input id="wmSize" type="range" min="10" max="120" value="36" />
+                <span class="wmValue" id="wmSizeVal">36</span>
+              </div>
+            </div>
+
+
+
+<!-- Font -->
+<div class="wmField">
+  <label class="wmLabel">Font</label>
+
+</div>
+
+<!-- Weight -->
+<div class="wmField">
+  <label class="wmLabel">Weight</label>
+  <select id="wmWeight" class="select">
+    <option value="300">300 (Light)</option>
+    <option value="400" selected>400 (Regular)</option>
+    <option value="500">500 (Medium)</option>
+    <option value="600">600 (SemiBold)</option>
+    <option value="700">700 (Bold)</option>
+    <option value="800">800 (ExtraBold)</option>
+  </select>
+</div>
+
+<!-- Toggles -->
+<div class="wmField wmSpan2">
+  <div class="wmTogglesRow">
+    <label class="wmMiniToggle"><input id="wmBold" type="checkbox"> <span>Bold</span></label>
+    <label class="wmMiniToggle"><input id="wmShadow" type="checkbox" checked> <span>Shadow</span></label>
+    <label class="wmMiniToggle"><input id="wmStroke" type="checkbox" checked> <span>Stroke</span></label>
+    <label class="wmMiniToggle"><input id="wmGradient" type="checkbox"> <span>Gradient</span></label>
+  </div>
+</div>
+
+<!-- Stroke thickness -->
+<div class="wmField">
+  <label class="wmLabel">Stroke</label>
+  <div class="wmRange">
+    <input id="wmStrokeW" type="range" min="0" max="12" value="3" />
+    <span class="wmValue" id="wmStrokeWVal">3</span>
+  </div>
+</div>
+
+<!-- Gradient type -->
+<div class="wmField">
+  <label class="wmLabel">Gradient</label>
+  <select id="wmGradType" class="select">
+    <option value="lr">Left → Right</option>
+    <option value="diag">Diagonal</option>
+  </select>
+</div>
+
+<!-- Gradient colors -->
+<div class="wmField">
+  <label class="wmLabel">Grad Color A</label>
+  <input id="wmGradA" class="select" type="color" value="#ffffff" />
+</div>
+
+<div class="wmField">
+  <label class="wmLabel">Grad Color B</label>
+  <input id="wmGradB" class="select" type="color" value="#7c3aed" />
+</div>
+
+
+
+
+
+
+
+
+
+
+            <div class="wmField">
+              <label class="wmLabel">Opacity</label>
+              <div class="wmRange">
+                <input id="wmOpacity" type="range" min="0" max="100" value="18" />
+                <span class="wmValue" id="wmOpacityVal">18%</span>
+              </div>
+            </div>
+
+            <div class="wmField">
+              <label class="wmLabel">Position</label>
+              <select id="wmPos" class="select">
+                <option value="br">Bottom Right</option>
+                <option value="bl">Bottom Left</option>
+                <option value="tr">Top Right</option>
+                <option value="tl">Top Left</option>
+                <option value="center">Center</option>
+                <option value="tile">Tile (Repeat)</option>
+              </select>
+            </div>
+
+            <div class="wmField">
+              <label class="wmLabel">Rotate</label>
+              <div class="wmRange">
+                <input id="wmRotate" type="range" min="-45" max="45" value="-20" />
+                <span class="wmValue" id="wmRotateVal">-20°</span>
+              </div>
+            </div>
+
+            <div class="wmField">
+              <label class="wmLabel">Margin</label>
+              <div class="wmRange">
+                <input id="wmMargin" type="range" min="0" max="80" value="20" />
+                <span class="wmValue" id="wmMarginVal">20</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="wmHint">Tip: guna <b>Tile</b> untuk watermark repeat macam dokumen.</div>
+        </div>
+      </div>
+
+      <!-- RIGHT: PREVIEW -->
+ <!-- RIGHT: PREVIEW -->
+<div class="panel">
+  <div class="panelHead">
+    <h2>Preview</h2>
+    <p>Ikut photo yang dipilih.</p>
+  </div>
+
+  <!-- buang previewCard, pakai body terus -->
+  <div class="previewBody">
+    <canvas id="previewCanvas"></canvas>
+  </div>
+</div>
+
+ 
   </main>
+   <footer class="footer">
+  Last Update 27 Feb 2026 by Muin - 005<br>
+  <span class="muted">What's New - Watermark & Dark Mode</span>
+</footer>
 
   <!-- EDIT MODAL -->
   <div class="modal" id="editModal" aria-hidden="true">
@@ -206,28 +386,27 @@
             </div>
             <div class="ctlMini" id="rotVal">0°</div>
           </div>
-          
+
           <div class="ctlBlock">
-          <div class="ctlLabel">Light (Auto / Manual)</div>
-        
-          <div class="btnRow" style="margin-bottom:10px;">
-            <button class="ghost" id="autoAdjustBtn" type="button">✨ Auto Adjust</button>
-            <button class="ghost" id="clearAdjustBtn" type="button">Reset Light</button>
+            <div class="ctlLabel">Light (Auto / Manual)</div>
+
+            <div class="btnRow" style="margin-bottom:10px;">
+              <button class="ghost" id="autoAdjustBtn" type="button">✨ Auto Adjust</button>
+              <button class="ghost" id="clearAdjustBtn" type="button">Reset Light</button>
+            </div>
+
+            <div class="ctlLabel" style="margin-top:8px;">Brightness</div>
+            <input id="brightRange" type="range" min="-50" max="50" value="0" step="1" />
+            <div class="ctlMini" id="brightVal">0</div>
+
+            <div class="ctlLabel" style="margin-top:10px;">Shadows</div>
+            <input id="shadowRange" type="range" min="0" max="100" value="0" step="1" />
+            <div class="ctlMini" id="shadowVal">0</div>
+
+            <div class="smallNote" style="margin-top:10px;">
+              Tip: Auto Adjust dulu, lepas tu fine-tune brightness/shadows kalau perlu.
+            </div>
           </div>
-        
-          <div class="ctlLabel" style="margin-top:8px;">Brightness</div>
-          <input id="brightRange" type="range" min="-50" max="50" value="0" step="1" />
-          <div class="ctlMini" id="brightVal">0</div>
-        
-          <div class="ctlLabel" style="margin-top:10px;">Shadows</div>
-          <input id="shadowRange" type="range" min="0" max="100" value="0" step="1" />
-          <div class="ctlMini" id="shadowVal">0</div>
-        
-          <div class="smallNote" style="margin-top:10px;">
-            Tip: Auto Adjust dulu, lepas tu fine-tune brightness/shadows kalau perlu.
-          </div>
-        </div>
-          
 
           <div class="ctlBlock">
             <div class="ctlLabel">Actions</div>
