@@ -277,7 +277,9 @@ h1{ margin:0; font-size: 24px; letter-spacing:.2px; }
 .btn:disabled{ opacity:.6; cursor:not-allowed; }
 
 .status{ margin-top: 10px; color: var(--muted); font-size: 13px; }
-
+.footer{
+  text-align: center;
+}
 .progress{
   height: 10px;
   border-radius: 999px;
@@ -299,6 +301,12 @@ h1{ margin:0; font-size: 24px; letter-spacing:.2px; }
   border: 1px solid var(--border);
   background: #fbfbfe;
   overflow:hidden;
+  padding: 20px;
+}
+
+.previewCard canvas{
+  border-radius: 18px;
+  box-shadow: 0 20px 50px rgba(0,0,0,.25);
 }
 .previewHead{
   display:flex;
@@ -327,6 +335,83 @@ h1{ margin:0; font-size: 24px; letter-spacing:.2px; }
   color: var(--muted);
   font-size: 12px;
   text-align:center;
+}
+
+.wmTogglesRow{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px 14px;
+  align-items:center;
+  padding: 6px 0;
+}
+
+.wmMiniToggle{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  user-select:none;
+  font-weight:700;
+  color: var(--text);
+  opacity:.9;
+}
+
+.wmMiniToggle input{
+  width:16px;
+  height:16px;
+  accent-color: var(--primary);
+}
+@font-face {
+  font-family: "Gilroy";
+  src: url("fonts/Gilroy-BoldItalic.ttf") format("truetype");
+  font-weight: 700;
+  font-style: italic;
+}
+@font-face {
+  font-family: "Gilroy";
+  src: url("fonts/Gilroy-Thin.ttf") format("truetype");
+  font-weight: 100;
+}
+
+@font-face {
+  font-family: "Gilroy";
+  src: url("fonts/Gilroy-Light.ttf") format("truetype");
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: "Gilroy";
+  src: url("fonts/Gilroy-Regular.ttf") format("truetype");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Gilroy";
+  src: url("fonts/Gilroy-Medium.ttf") format("truetype");
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: "Gilroy";
+  src: url("fonts/Gilroy-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: "Gilroy";
+  src: url("fonts/Gilroy-Bold.ttf") format("truetype");
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: "Gilroy";
+  src: url("fonts/Gilroy-Heavy.ttf") format("truetype");
+  font-weight: 800;
+}
+
+@font-face {
+  font-family: "Gilroy";
+  src: url("fonts/Gilroy-Black.ttf") format("truetype");
+  font-weight: 900;
 }
 
 /* ====== PHOTO LIST ====== */
@@ -484,6 +569,144 @@ h1{ margin:0; font-size: 24px; letter-spacing:.2px; }
 
 /* Light controls (optional feel) */
 .ghost:active { transform: translateY(1px); }
+
+
+/* ===== Watermark UI ===== */
+.wmCard { margin-top: 14px; }
+
+.wmHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding-bottom:10px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+.wmTitle{
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+.wmToggle{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  user-select:none;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.wmToggle input{
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+}
+
+.wmGrid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.wmSpan2{ grid-column: 1 / -1; }
+
+.wmField{
+  display:flex;
+  flex-direction:column;
+  gap: 8px;
+}
+
+.wmLabel{
+  font-size: .85rem;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.wmInput{
+  padding: 10px 12px;
+}
+
+.wmRange{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.wmRange input[type="range"]{
+  width: 100%;
+  height: 6px;
+}
+
+.wmValue{
+  min-width: 52px;
+  text-align: right;
+  font-weight: 800;
+  color: var(--text);
+  opacity: .9;
+}
+
+.wmHint{
+  margin-top: 10px;
+  font-size: .82rem;
+  color: var(--muted);
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+/* ===== Watermark + Preview Layout ===== */
+
+.wmPreviewWrap{
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.wmCard{
+  position: sticky;
+  top: 20px;
+}
+
+
+
+.panel .previewBody{
+  padding: 14px;
+}
+
+.panel .previewBody canvas{
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+}
+
+.muted{
+  opacity: 0.6;
+}
+
+
+
+
+
+
+
+
+/* responsive */
+@media (max-width: 1100px){
+  .wmPreviewWrap{
+    grid-template-columns: 1fr;
+  }
+  .wmCard{
+    position: relative;
+    top: unset;
+  }
+}
+
+
+
 
 @keyframes btnPop {
   from { transform: scale(.98); }
